@@ -5,11 +5,23 @@ import (
 	"os"
 )
 
-func ReadFile( filename string){
-	content, err := os.ReadFile(filename)
+func ReadFile(file_input string) string {
+
+	file, err := os.Open(file_input)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(string(content))
+	aFile, _ := file.Stat()
+
+	size := aFile.Size()
+
+	arr := make([]byte, size)
+
+	file.Read(arr)
+
+	defer file.Close()
+
+	return string(arr)
+
 }
