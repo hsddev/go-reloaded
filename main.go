@@ -13,22 +13,36 @@ result := []rune(el)
 	
 	// return el
 	for i:=0;i<len(el);i++{
-		if(i<=len(el)-2){
-			if (el[i]==' ' && isPunc(rune(el[i+1]))){
+		if(i<=len(el)-1){
+			if (el[i]==' ' && isPunc(rune(el[i+1]))) || (isPunc(rune(el[i])) && isPunc(rune(el[i+1]))){
 				result[i], result[i+1]= result[i+1], result[i]
 			}
-			
 		}else {
-			if (el[i+1]==' '{
+			if (el[i+1]==' '){
 				result[i+1] = 'x'
 			}
 		}
-
-		}
-		return strings.TrimSpace(string(result))
 	}
-	
 
+    var res []string
+    var element []rune
+
+		for _, v:= range strings.Split(string(result), " ") {
+			for k,j:= range v {	
+				if (j != ' ') {
+					element = append(element, j)
+				}
+				if k == len(v)-1 {
+					element = append(element, ' ')
+				}	
+		    }
+		}
+
+		res = append(res, string(element))
+
+		return strings.TrimSpace(strings.Join(res,""))
+
+	}
 
 // Join the words in one sentence and add a space between each word
 func joinWords(el []string) string {
@@ -48,33 +62,6 @@ func atoAn(el []string)[]string{
 	return el
 }
 
-// Advanced convert (cap, number)..
-func advancedConvert(el []string)[]string{
-	var id int
-	for i:=0;i<len(el);i++{
-		switch(el[i]){
-		case "(up,":
-			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
-			for j := 1; j <= id; j++ {
-				el[i-j] = strings.ToUpper(el[i-j])
-			}
-			el = append(el[:i], el[i+2:]...)
-		case "(low,":
-			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
-			for j := 1; j <= id; j++ {
-				el[i-j] = strings.ToLower(el[i-j])
-			}
-			el = append(el[:i], el[i+2:]...)
-	    case "(cap,":
-			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
-			for j := 1; j <= id; j++ {
-				el[i-j] = strings.Title(el[i-j])
-			}
-			el = append(el[:i], el[i+2:]...)
-		}
-	}
-	return el
-}
 
 // Basic convert (cap) - (hex) - (bin)..s
 func basicConvert(el []string) []string{
@@ -130,6 +117,34 @@ func getInstance(content string) []string {
 	return strings.Split(content, " ")
 }
 
+// Advanced convert (cap, number)..
+func AdvancedConvert(el []string)[]string{
+	var id int
+	for i:=0;i<len(el);i++{
+		switch(el[i]){
+		case "(up,":
+			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
+			for j := 1; j <= id; j++ {
+				el[i-j] = strings.ToUpper(el[i-j])
+			}
+			el = append(el[:i], el[i+2:]...)
+		case "(low,":
+			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
+			for j := 1; j <= id; j++ {
+				el[i-j] = strings.ToLower(el[i-j])
+			}
+			el = append(el[:i], el[i+2:]...)
+	    case "(cap,":
+			id,_ = strconv.Atoi(strings.Trim(el[i+1], ")"))
+			for j := 1; j <= id; j++ {
+				el[i-j] = strings.Title(el[i-j])
+			}
+			el = append(el[:i], el[i+2:]...)
+		}
+	}
+	return el
+}
+
 func main(){
 	// Get arguments
 	// arguments := os.Args;
@@ -137,12 +152,9 @@ func main(){
 	// reading the file
 	content, _ := ioutil.ReadFile("sample.txt")
 
-	// slice := getInstance(string(content));
-	//joinWords(advancedConvert(basicConvert
-	slice1:= changePunctuationPosition(string(content))
-
+	slice1:= changePunctuationPosition(joinWords(atoAn(AdvancedConvert(basicConvert(getInstance(string(content)))))))
 
 	// writing into the file
-   fmt.Println(slice1)
+	fmt.Println(slice1)
 	
 }
